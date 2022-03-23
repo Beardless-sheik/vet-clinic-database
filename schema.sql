@@ -53,7 +53,7 @@ CREATE TABLE vets(
 
 -- There is a many-to-many relationship between the tables species and vets: a vet can specialize in 
 -- multiple species, and a species can have multiple vets specialized in it. Create a "join table" called specializations to handle this relationship.
-DROP TABLE IF EXISTS specializations  CASCADE;
+DROP TABLE IF EXISTS specializations 
 CREATE TABLE specializations (
     species_id INT,
     vets_id INT
