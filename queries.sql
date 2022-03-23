@@ -363,3 +363,112 @@ SELECT o.full_name AS owner, COUNT(a.*) AS total_animals FROM animals a RIGHT JO
 --  Melody Pond |             3
 -- (1 row)
 
+-- Who was the last animal seen by William Tatcher?
+SELECT vets.name, animals.name, date_visited FROM vets JOIN visits ON vets.id = visits.vet_id
+JOIN animals ON animals.id = visits.animal_id WHERE vets.name ='William Tatcher' ORDER BY visits.date_visited DESC LIMIT 1;
+--       name       |  name   | date_visited 
+-- -----------------+---------+--------------
+--  William Tatcher | Blossom | 2021-01-11
+-- (1 row)
+
+--How many different animals did Stephanie Mendez see?
+SELECT COUNT(*) as total_animals from vets JOIN visits ON vets.id = visits.vet_id WHERE name='Stephanie Mendez';
+--  total_animals 
+-- ---------------
+--              4
+-- (1 row)
+
+--List all vets and their specialties, including vets with no specialties.
+SELECT 
+	vets.name,
+	species.name as specialization
+from vets
+LEFT JOIN specializations ON specializations.vets_id = vets.id
+LEFT JOIN  species ON specializations.species_id = species.id;
+--        name       | specialization 
+-- ------------------+----------------
+--  William Tatcher  | Pokemon
+--  Stephanie Mendez | Digimon
+--  Stephanie Mendez | Pokemon
+--  Jack Harkness    | Digimon
+--  Maisy Smith      | 
+-- (5 rows)
+
+--List all animals that visited Stephanie Mendez between April 1st and August 30th, 2020.
+SELECT animals.name ,date_visited from animals 
+JOIN visits ON animals.id= visits.animal_id JOIN vets ON vets.id=visits.vet_id
+ WHERE vets.name= 'Stephanie Mendez' AND visits.date_visited BETWEEN '2020-04-01' AND '2020-08-30';
+--   name   | date_visited 
+-- ---------+--------------
+--  Agumon  | 2020-07-22
+--  Blossom | 2020-05-24
+-- (2 rows)
+
+--What animal has the most visits to vets?
+SELECT animals.name, COUNT(*) as total_visit from animals
+JOIN visits ON visits.animal_id = animals.id
+GROUP BY animals.name
+ORDER BY total_visit DESC
+LIMIT 1;
+--   name   | total_visit 
+-- ---------+-------------
+--  Boarmon |           4
+-- (1 row)
+
+
+--Who was Maisy Smith's first visit?
+SELECT vets.name, animals.name, date_visited FROM vets JOIN visits ON vets.id=visits.vet_id
+JOIN animals ON animals.id= visits.animal_id WHERE vets.name ='Maisy Smith' ORDER BY visits.date_visited ASC LIMIT 1;
+--     name     |  name   | date_visited 
+-- -------------+---------+--------------
+--  Maisy Smith | Boarmon | 2019-01-24
+-- (1 row)
+
+--Details for most recent visit: animal information, vet information, and date of visit.
+SELECT
+	date_visited,
+	animals.date_of_birth as animal_dob,
+	animals.escape_attempts,
+	animals.neutered,
+	animals.weight_kg as animal_weight,
+	vets.name as vet_name,
+	vets.age as vet_age,
+	vets.date_of_graduation
+from visits
+JOIN animals ON animals.id = visits.animal_id
+JOIN vets ON vets.id = visits.vet_id
+ORDER BY date_visited DESC
+LIMIT 1;
+--  date_visited | animal_dob | escape_attempts | neutered | animal_weight |     vet_name     | vet_age | date_of_graduation 
+-- --------------+------------+-----------------+----------+---------------+------------------+---------+--------------------
+--  2021-05-04   | 2017-05-12 |               5 | t        |            11 | Stephanie Mendez |      64 | 1981-05-04
+-- (1 row)
+
+--How many visits were with a vet that did not specialize in that animal's species?
+SELECT COUNT(*)
+FROM visits
+JOIN animals ON animals.id = visits.animal_id
+JOIN vets ON vets.id = visits.vet_id
+JOIN specializations ON specializations.vets_id = visits.vet_id
+WHERE animals.species_id != specializations.species_id;
+--  count 
+-- -------
+--      7
+-- (1 row)
+
+
+--What specialty should Maisy Smith consider getting? Look for the species she gets the most.
+SELECT species.name as specialization , COUNT(visits.animal_id) from visits
+JOIN vets ON vets.id = visits.vet_id
+JOIN animals ON animals.id = visits.animal_id
+JOIN species ON species.id = animals.species_id
+WHERE vets.name = 'Maisy Smith'
+GROUP BY species.name
+ORDER BY species.name ASC 
+LIMIT 1;
+--  specialization | count 
+-- ----------------+-------
+--  Digimon        |     6
+-- (1 row)
+
+
