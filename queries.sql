@@ -471,4 +471,20 @@ LIMIT 1;
 --  Digimon        |     6
 -- (1 row)
 
+-- First Query
+EXPLAIN ANALYSE SELECT COUNT(*) FROM visits where animal_id = 4;
 
+-- Added index on animal_id for visits table
+CREATE INDEX vistsAnimal_Id_ascending ON visits(animal_id ASC);
+
+--Second Query
+EXPLAIN ANALYSE SELECT * FROM visits where vet_id = 2;
+
+-- Added index on vet_id for visits table
+CREATE INDEX vistsVet_Id_ascending ON visits(vet_id ASC);
+
+--Third Query
+EXPLAIN ANALYSE SELECT * FROM owners where email = 'owner_18327@mail.com';
+
+-- Added index on email for owners table
+CREATE INDEX owners_Email_ascending ON owners(email ASC);
